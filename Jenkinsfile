@@ -7,7 +7,7 @@ node {
     }
 
     stage('Snyk SCA & SAST') {
-        withCredentials([string(credentialsId: 'SNYK_TOKEN', variable: 'SNYK_TOKEN')]) {
+        withCredentials([string(credentialsId: 'synk_id', variable: 'SNYK_TOKEN')]) {
             sh 'npm ci'
             sh 'npm i -g snyk@latest'
             sh 'export SNYK_TOKEN=${SNYK_TOKEN} && snyk auth ${SNYK_TOKEN}'
