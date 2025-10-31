@@ -52,7 +52,7 @@ pipeline {
                     echo "Running Docker container..."
                     sh '''
                         docker rm -f nodejs-chat-app-container || true
-                        docker run -d --name nodejs-chat-app-container -p 3700:3700 ${IMAGE_NAME}:latest
+                        docker run -d --name nodejs-chat-app-container -p 3000:3000 ${IMAGE_NAME}:latest
                     '''
 
                     echo "Pushing image to Docker Hub..."
