@@ -1,6 +1,8 @@
 node {
-    def nodeHome = tool name: 'Node18', type: 'NodeJS'
-        env.PATH = "${nodeHome}/bin:${env.PATH}"
+    docker.image('node:18-alpine').inside {
+        stage('Checkout') {
+        checkout scm
+    }
 
     stage('Install Dependencies') {
         sh 'npm ci'
