@@ -11,4 +11,4 @@ services:
       - NODE_ENV=production
     volumes:
       - ./:/app
-    command: ["node", "app.js"]
+    command: ["node", "index.js"]
