@@ -7,16 +7,12 @@ node {
     }
 
     stage('Snyk SCA & SAST') {
-        withCredentials([string(credentialsId: 'synk_id', variable: 'SNYK_TOKEN')]) {
-            sh 'npm ci'
-            sh 'npm i -g snyk@latest'
-            sh 'export SNYK_TOKEN=${SNYK_TOKEN} && snyk auth ${SNYK_TOKEN}'
-
-            // Run Snyk test (fails if high/critical vulnerabilities exist)
-            sh 'snyk test --all-projects --severity-threshold=high'
-
-            // Monitor project in Snyk UI
-            sh 'snyk monitor --all-projects'
+        script {
+            snykSecurity(
+                snykInstallation: 'Snyk-installation', // the name of the installation in Jenkins global config
+                snykTokenId: 'synk_id',
+                severity: 'critical'
+            )
         }
     }
 
