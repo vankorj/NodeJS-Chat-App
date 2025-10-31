@@ -6,6 +6,18 @@ node {
         checkout scm
     }
 
+    stage('Install Dependencies') {
+        sh 'npm ci'
+    }
+
+    stage('Verify Node Modules') {
+        sh '''
+            ls -l
+            ls -l node_modules || echo "node_modules missing"
+            npm ci
+        '''
+    }
+
     stage('Snyk SCA & SAST') {
         script {
             snykSecurity(
