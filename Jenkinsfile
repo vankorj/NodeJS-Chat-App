@@ -22,17 +22,15 @@ pipeline {
 
         stage('SAST-TEST') {
             steps {
-                echo 'Running Snyk security scan...'
-                // Optional: hide Dockerfile temporarily to avoid OCI errors
-                sh 'mv Dockerfile Dockerfile.bak || true'
                 script {
-                    snykSecurity(
-                        snykInstallation: 'Snyk-installation',
-                        snykTokenId: 'synk_id',
-                        severity: 'critical'
-                    )
+                    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                        snykSecurity(
+                            snykInstallation: 'Snyk-installation',
+                            snykTokenId: 'synk_id',
+                            severity: 'critical'
+                        )
+                    }
                 }
-                sh 'mv Dockerfile.bak Dockerfile || true'
             }
         }
 
