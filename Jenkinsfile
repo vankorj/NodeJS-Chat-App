@@ -70,6 +70,7 @@ pipeline {
                 script {
                     sh '''
                         docker-compose down
+                        docker rm -f nodejs-chat-app-container || true
                         docker-compose up -d
                         docker ps
                     '''
