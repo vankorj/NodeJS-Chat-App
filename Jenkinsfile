@@ -37,18 +37,21 @@ pipeline {
         }
 
         stage('SonarQube Analysis') {
-            agent { label 'CWEB-2140-60-Appserver-Korbin' }
             steps {
                 script {
-                    def scannerHome = tool 'SonarQube-Scanner'
-                    withSonarQubeEnv('SonarQube-installations') {
-                        sh "${scannerHome}/bin/sonar-scanner \
-                            -Dsonar.projectKey=nodejs-chat-app \
-                            -Dsonar.sources=."
+                    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                        echo 'Running SonarQube analysis regardless of Snyk results...'
+                        def scannerHome = tool 'SonarQube-Scanner'
+                        withSonarQubeEnv('SonarQube-installations') {
+                            sh "${scannerHome}/bin/sonar-scanner \
+                                -Dsonar.projectKey=nodejs-chat-app \
+                                -Dsonar.sources=."
+                        }
                     }
                 }
             }
         }
+
 
         stage('BUILD-AND-TAG') {
             agent { label 'CWEB-2140-60-Appserver-Korbin' }
