@@ -47,7 +47,7 @@ pipeline {
                 script {
                     echo "Building Docker image ${IMAGE_NAME}..."
                     // Build Docker image; npm ci runs inside the Dockerfile
-                    def app = docker.build("${IMAGE_NAME}:latest", ".")
+                    def app = docker.build("vankorj/nodejs-chat-app:latest")
                 }
             }
         }
