@@ -31,15 +31,11 @@ pipeline {
 
         stage('SAST-TEST') {
             steps {
-                script {
-                    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                        snykSecurity(
-                            snykInstallation: 'Snyk-installation',
-                            snykTokenId: 'synk_id',
-                            severity: 'critical'
-                        )
-                    }
-                }
+                echo 'Running Snyk inside Docker container...'
+                sh """
+                docker run --rm -v \$(pwd):/app -w /app vankorj/nodejs-chat-app:latest \
+                    sh -c "npm ci && npx snyk test --severity-threshold=critical"
+                """
             }
         }
 
