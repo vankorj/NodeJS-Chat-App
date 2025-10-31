@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  nodejs-chat-app:
+    build: .
+    image: vankorj/nodejs-chat-app:latest
+    container_name: nodejs-chat-app-container
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+    volumes:
+      - ./:/app
+    command: ["node", "app.js"]
