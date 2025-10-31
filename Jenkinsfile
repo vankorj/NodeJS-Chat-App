@@ -41,36 +41,21 @@ pipeline {
             }
         }
 
-        stage('BUILD-AND-TAG') {
+        stage('BUILD-RUN-PUSH') {
             agent { label 'CWEB-2140-60-Appserver-Korbin' }
             steps {
                 script {
                     echo "Building Docker image ${IMAGE_NAME}..."
-                    // Build Docker image; npm ci runs inside the Dockerfile
-                    def app = docker.build("vankorj/nodejs-chat-app:latest")
-                }
-            }
-        }
+                    // Build Docker image
+                    def app = docker.build("${IMAGE_NAME}:latest")
 
-        stage('RUN-CONTAINER') {
-            agent { label 'CWEB-2140-60-Appserver-Korbin' }
-            steps {
-                script {
                     echo "Running Docker container..."
-                    // Remove any previous container to avoid name conflict
                     sh '''
                         docker rm -f nodejs-chat-app-container || true
-                        docker run -d --name nodejs-chat-app-container -p 3700:3700 vankorj/nodejs-chat-app:latest
+                        docker run -d --name nodejs-chat-app-container -p 3700:3700 ${IMAGE_NAME}:latest
                     '''
-                }
-            }
-        }
 
-        stage('POST-TO-DOCKERHUB') {
-            agent { label 'CWEB-2140-60-Appserver-Korbin' }
-            steps {
-                script {
-                    echo "Pushing image ${IMAGE_NAME}:latest to Docker Hub..."
+                    echo "Pushing image to Docker Hub..."
                     docker.withRegistry('https://registry.hub.docker.com', DOCKERHUB_CREDENTIALS) {
                         app.push('latest')
                     }
