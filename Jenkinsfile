@@ -20,9 +20,7 @@ pipeline {
                         echo 'Running SonarQube analysis...'
                         def scannerHome = tool 'SonarQube-Scanner'
                         withSonarQubeEnv('SonarQube-installations') {
-                            sh "${scannerHome}/bin/sonar-scanner \
-                                -Dsonar.projectKey=nodejs-chat-app \
-                                -Dsonar.sources=."
+                            sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=nodejs-chat-app -Dsonar.sources=."
                         }
                     }
                 }
@@ -48,9 +46,22 @@ pipeline {
             steps {
                 script {
                     echo "Building Docker image ${IMAGE_NAME}..."
-                    // Build Docker image using Dockerfile in current workspace
-                    app = docker.build("${IMAGE_NAME}", ".")
-                    app.tag("latest")
+                    // Build Docker image; npm ci runs inside the Dockerfile
+                    def app = docker.build("${IMAGE_NAME}:latest", ".")
+                }
+            }
+        }
+
+        stage('RUN-CONTAINER') {
+            agent { label 'CWEB-2140-60-Appserver-Korbin' }
+            steps {
+                script {
+                    echo "Running Docker container..."
+                    // Remove any previous container to avoid name conflict
+                    sh '''
+                        docker rm -f nodejs-chat-app-container || true
+                        docker run -d --name nodejs-chat-app-container -p 3700:3700 vankorj/nodejs-chat-app:latest
+                    '''
                 }
             }
         }
@@ -61,7 +72,7 @@ pipeline {
                 script {
                     echo "Pushing image ${IMAGE_NAME}:latest to Docker Hub..."
                     docker.withRegistry('https://registry.hub.docker.com', DOCKERHUB_CREDENTIALS) {
-                        app.push('latest')
+                        sh "docker push ${IMAGE_NAME}:latest"
                     }
                 }
             }
