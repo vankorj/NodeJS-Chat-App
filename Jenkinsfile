@@ -5,7 +5,7 @@ node {
         }
 
         stage('Install Dependencies') {
-            sh 'npm ci'
+            sh 'npm install'
         }
 
         stage('Snyk Scan') {
