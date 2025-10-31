@@ -1,21 +1,9 @@
 node {
-    env.DOCKERHUB_CREDENTIALS = 'docker-id'
-    env.IMAGE_NAME = 'vankorj/nodejs-chat-app'
-
-    stage('Checkout') {
-        checkout scm
-    }
+    def nodeHome = tool name: 'Node18', type: 'NodeJS'
+        env.PATH = "${nodeHome}/bin:${env.PATH}"
 
     stage('Install Dependencies') {
         sh 'npm ci'
-    }
-
-    stage('Verify Node Modules') {
-        sh '''
-            ls -l
-            ls -l node_modules || echo "node_modules missing"
-            npm ci
-        '''
     }
 
     stage('Snyk SCA & SAST') {
