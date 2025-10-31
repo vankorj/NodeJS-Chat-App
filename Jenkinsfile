@@ -72,7 +72,7 @@ pipeline {
                 script {
                     echo "Pushing image ${IMAGE_NAME}:latest to Docker Hub..."
                     docker.withRegistry('https://registry.hub.docker.com', DOCKERHUB_CREDENTIALS) {
-                        sh "docker push ${IMAGE_NAME}:latest"
+                        app.push('latest')
                     }
                 }
             }
