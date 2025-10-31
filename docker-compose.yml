@@ -8,7 +8,7 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - NODE_ENV=production
+      - NODE_ENV=development
     volumes:
       - ./:/app
-    command: ["node", "index.js"]
+    command: sh -c "npm install && node index.js"
