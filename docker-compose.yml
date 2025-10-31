@@ -9,6 +9,4 @@ services:
       - "3000:3000"
     environment:
       - NODE_ENV=development
-    volumes:
-      - ./:/app
     command: sh -c "npm install && node index.js"
