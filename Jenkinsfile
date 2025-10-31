@@ -9,7 +9,7 @@ node {
     stage('Snyk SCA & SAST') {
         script {
             snykSecurity(
-                snykInstallation: 'Snyk-installation', // the name of the installation in Jenkins global config
+                snykInstallation: 'Snyk-installation',
                 snykTokenId: 'synk_id',
                 severity: 'critical'
             )
