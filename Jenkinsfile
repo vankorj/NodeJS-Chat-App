@@ -13,18 +13,11 @@ pipeline {
             }
         }
 
-        stage('Install Dependencies') {
-            steps {
-                echo 'Installing Node.js dependencies...'
-                sh 'npm ci'
-            }
-        }
-
         stage('SonarQube Analysis') {
             steps {
                 script {
                     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                        echo 'Running SonarQube analysis regardless of Snyk results...'
+                        echo 'Running SonarQube analysis...'
                         def scannerHome = tool 'SonarQube-Scanner'
                         withSonarQubeEnv('SonarQube-installations') {
                             sh "${scannerHome}/bin/sonar-scanner \
@@ -50,13 +43,13 @@ pipeline {
             }
         }
 
-
         stage('BUILD-AND-TAG') {
             agent { label 'CWEB-2140-60-Appserver-Korbin' }
             steps {
                 script {
                     echo "Building Docker image ${IMAGE_NAME}..."
-                    app = docker.build("${IMAGE_NAME}")
+                    // Build Docker image using Dockerfile in current workspace
+                    app = docker.build("${IMAGE_NAME}", ".")
                     app.tag("latest")
                 }
             }
@@ -78,11 +71,13 @@ pipeline {
             agent { label 'CWEB-2140-60-Appserver-Korbin' }
             steps {
                 echo 'Starting deployment using docker-compose...'
-                sh '''
-                    docker-compose down
-                    docker-compose up -d
-                    docker ps
-                '''
+                script {
+                    sh '''
+                        docker-compose down
+                        docker-compose up -d
+                        docker ps
+                    '''
+                }
                 echo 'Deployment completed successfully!'
             }
         }
